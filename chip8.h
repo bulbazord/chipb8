@@ -17,6 +17,8 @@
 /* The Chip-8 has a 16-key hexadecimal keyboard */
 #define KEY_LIST_SIZE		16
 
+#define KEY_PRESSED		1
+
 struct chip8 {
 	uint8_t		memory[MEM_SIZE];
 	uint8_t		regs[REGISTER_LIST_SIZE];
@@ -28,5 +30,7 @@ struct chip8 {
 	uint8_t		keyboard[KEY_LIST_SIZE];
 };
 
+
+void init_chip8(struct chip8 *chip8);
 
 #endif
