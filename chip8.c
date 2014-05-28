@@ -1,6 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
 #include "chip8.h"
-
-struct chip8 *chip8 = NULL;
 
 void init_chip8(struct chip8 *chip8)
 {
@@ -11,15 +11,16 @@ void init_chip8(struct chip8 *chip8)
 
 		// Initialize Registers
 		memset(chip8->regs, 0x00, REGISTER_LIST_SIZE);
-		chip8->reg_I = 0x0000;
+		chip8->reg_I = 0;
 		chip8->reg_PC = PROGRAM_START;
-		chip8->reg_delay = 0x00;
-		chip8->reg_sound = 0x00;
+		chip8->reg_delay = 0;
+		chip8->reg_sound = 0;
 
 		// Initialize Stack
-		memset(chip8->stack, 0x0000, STACK_SIZE);
+		memset(chip8->stack, 0x00, STACK_SIZE);
 
 		// Initialize keyboard
 		memset(chip8->keyboard, 0, KEY_LIST_SIZE);
+
 	}
 }

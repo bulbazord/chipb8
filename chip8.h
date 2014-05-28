@@ -1,3 +1,4 @@
+#include <stdint.h>
 #ifndef _CHIP8_H
 #define _CHIP8_H
 
