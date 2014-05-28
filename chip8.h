@@ -33,5 +33,6 @@ struct chip8 {
 
 
 void init_chip8(struct chip8 *chip8);
+void init_font(struct chip8 *chip8);
 
 #endif
