@@ -58,7 +58,7 @@ void init_font(struct chip8 *chip8)
 	chip8->memory[34] = 0xF0;
 
 	// Set up '7'
-	chip8->memory[35] = 0xf0;
+	chip8->memory[35] = 0xF0;
 	chip8->memory[36] = 0x10;
 	chip8->memory[37] = 0x20;
 	chip8->memory[38] = 0x40;
