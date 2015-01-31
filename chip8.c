@@ -3,8 +3,33 @@
 #include "chip8.h"
 
 /*
- * This function assumes that the chip8
- * has already been malloc'd.
+ * This function assumes that the chip8 struct
+ * has had memory allocated already and is 
+ * valid.
+ */
+void init_instructions(struct chip8 *chip8) {
+        /* SYS */
+        chip8->instr[0] = 0x0000;
+        chip8->instr_masks[0] = 0xFFFF;
+        /* CLS */
+        chip8->instr[1] = 0x00E0;
+        chip8->instr_masks[1] = 0xFFFF;
+        /* RET */
+        chip8->instr[2] = 0x00EE;
+        chip8->instr_masks[2] = 0xFFFF;
+        /* JP */
+        chip8->instr[3] = 0x1000;
+        chip8->instr_masks[3] = 0xF000;
+        /* CALL */
+        chip8->instr[4] = 0x2000;
+        chip8->instr_masks[4] = 0xF000;
+        /* Finish for the rest */
+}
+
+/*
+ * This function assumes that the chip8 struct
+ * has had memory allocated already and is
+ * valid.
  */
 void init_font(struct chip8 *chip8)
 {
@@ -143,6 +168,7 @@ void init_chip8(struct chip8 *chip8)
 		memset(chip8->keyboard, 0, KEY_LIST_SIZE);
 
 		init_font(chip8);
+                init_instructions(chip8);
 	}
 }
 

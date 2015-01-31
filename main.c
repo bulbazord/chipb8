@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 {
 	struct chip8 *chip8 = malloc(sizeof(struct chip8));
 	if (chip8 == NULL) {
-		printf("chip8 could not be malloc'd.\n");
+		printf("Memory for chip8 could not be allocated.\n");
 		return 1;
 	}
 
