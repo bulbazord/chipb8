@@ -11,5 +11,6 @@ int main(int argc, char **argv)
 	}
 
 	init_chip8(chip8);
+        free(chip8);
 	return 0;
 }
