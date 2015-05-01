@@ -4,6 +4,4 @@
 #include <stdio.h>
 
 
-void load_program(struct chip8 *chip8, FILE *program);
-
 #endif

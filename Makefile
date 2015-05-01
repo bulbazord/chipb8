@@ -1,5 +1,14 @@
-all: chip8.o main.o input.o
-        gcc input.o chip8.o main.o -o chipb8
+src = $(wildcard *.c)
+obj = $(src:.c=.o)
 
+LDFLAGS = `sdl2-config --cflags --libs`
+
+chipb8: $(obj)
+	$(CC) $(LDFLAGS) -o $@ $^ 
+
+main.o: main.c
+	$(CC) $(LDFLAGS) -c -o $@ $<
+
+.PHONY: clean
 clean:
-	rm *.o chipb8
+	rm $(obj) chipb8
