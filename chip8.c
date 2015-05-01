@@ -2,12 +2,13 @@
 #include <string.h>
 #include "chip8.h"
 
-/*
+/**
  * This function assumes that the chip8 struct
  * has had memory allocated already and is 
  * valid.
  */
-void init_instructions(struct chip8 *chip8) {
+void init_instructions(struct chip8 *chip8)
+{
         /* SYS addr */
         chip8->instr[0] = 0x0000;
         chip8->instr_masks[0] = 0xFFFF;
@@ -116,7 +117,7 @@ void init_instructions(struct chip8 *chip8) {
 
 }
 
-/*
+/**
  * This function assumes that the chip8 struct
  * has had memory allocated already and is
  * valid.
