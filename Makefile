@@ -4,7 +4,7 @@ obj = $(src:.c=.o)
 LDFLAGS = `sdl2-config --cflags --libs`
 
 chipb8: $(obj)
-	$(CC) $(LDFLAGS) -o $@ $^ 
+	$(CC) -o $@ $^ 
 
 main.o: main.c
 	$(CC) $(LDFLAGS) -c -o $@ $<

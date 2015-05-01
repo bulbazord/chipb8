@@ -6,17 +6,22 @@
 #include "input.h"
 #include "chip8.h"
 
-int load_program(struct chip8 *c8, char *file)
+int load_program(struct chip8 *chip8, char *file)
 {
 	FILE *program;
 	program = fopen(file, "r");
 
 	if (program == NULL) {
-		fprintf(stderr, "Can't open that file.\n");
-		return -1;
+		fprintf(stderr, "ROM could not be loaded.\n");
+		return 1;
 	}
 
-	printf("File loaded: %s\n", file);
+	int current_addr = PROGRAM_START;
+
+	unsigned char buffer;
+	while (fread(&buffer, 1, 1, program) > 0) {
+		chip8->memory[current_addr++] = buffer;
+	}
 	fclose(program);
 	return 0;
 }
@@ -36,7 +41,10 @@ int main(int argc, char *argv[])
 	}
 
 	init_chip8(chip8);
-	load_program(chip8, argv[1]);
+	int ret = load_program(chip8, argv[1]);
+	if (ret == 0) {
+		// Begin read-eval loop here
+	}
 	free(chip8);
-	return 0;
+	return ret;
 }
