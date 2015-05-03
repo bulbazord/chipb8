@@ -261,6 +261,11 @@ void init_chip8(struct chip8 *chip8)
 		// Initialize keyboard
 		memset(chip8->keyboard, KEY_NOT_PRESSED, KEY_LIST_SIZE);
 
+		// Initialize Screen
+		memset(chip8->screen, 0, SCREEN_WIDTH * SCREEN_HEIGHT);
+
+		chip8->wait_key = 0;
+
 		init_font(chip8);
 		init_instructions(chip8);
 	}
@@ -304,7 +309,7 @@ void step(struct chip8 *chip8)
 
 		// 00E0 - CLS
 		case 1:
-			//TODO Clear screen here
+			memset(chip8->screen, 0, SCREEN_WIDTH * SCREEN_HEIGHT);
 			break;
 		
 		// 00EE - RET
@@ -482,7 +487,7 @@ void step(struct chip8 *chip8)
 
 		// Fx0A - LD Vx, K
 		case 27:
-			//TODO wait for keypress
+			chip8->wait_key = 1;
 			break;
 
 		// Fx15 - LD DT, Vx

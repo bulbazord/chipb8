@@ -24,6 +24,9 @@
 #define KEY_PRESSED		1
 #define KEY_NOT_PRESSED		0
 
+#define SCREEN_WIDTH		64
+#define SCREEN_HEIGHT		32
+
 /* Monolith. Think about refactoring */
 struct chip8 {
 	uint8_t		memory[MEM_SIZE];
@@ -37,6 +40,9 @@ struct chip8 {
 	uint8_t		keyboard[KEY_LIST_SIZE];
 	uint16_t	instr[INSTRUCTIONS_SIZE];
 	uint16_t	instr_masks[INSTRUCTIONS_SIZE];
+
+	uint8_t screen[SCREEN_WIDTH * SCREEN_HEIGHT];
+	uint8_t wait_key;
 };
 
 void init_chip8(struct chip8 *chip8);
