@@ -19,9 +19,10 @@
 #define KEY_LIST_SIZE		16
 
 /* The Chip-8 has 36 instructions */
-#define INSTRUCTIONS_SIZE	36
+#define INSTRUCTIONS_SIZE	35
 
 #define KEY_PRESSED		1
+#define KEY_NOT_PRESSED		0
 
 /* Monolith. Think about refactoring */
 struct chip8 {
@@ -31,6 +32,7 @@ struct chip8 {
 	uint16_t	reg_PC;
 	uint8_t		reg_delay;
 	uint8_t		reg_sound;
+	uint8_t		reg_SP;
 	uint16_t	stack[STACK_SIZE];
 	uint8_t		keyboard[KEY_LIST_SIZE];
 	uint16_t	instr[INSTRUCTIONS_SIZE];
@@ -40,5 +42,6 @@ struct chip8 {
 void init_chip8(struct chip8 *chip8);
 void init_font(struct chip8 *chip8);
 void init_instructions(struct chip8 *chip8);
+void step(struct chip8 *chip8);
 
 #endif

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "chip8.h"
 
@@ -11,7 +12,7 @@ void init_instructions(struct chip8 *chip8)
 {
 	/* SYS addr */
 	chip8->instr[0] = 0x0000;
-	chip8->instr_masks[0] = 0xFFFF;
+	chip8->instr_masks[0] = 0xF000;
 	/* CLS */
 	chip8->instr[1] = 0x00E0;
 	chip8->instr_masks[1] = 0xFFFF;
@@ -89,7 +90,7 @@ void init_instructions(struct chip8 *chip8)
 	chip8->instr_masks[25] = 0xF0FF;
 	/* LD Vx, DT */
 	chip8->instr[26] = 0xF007;
-	chip8->instr_masks[26] = 0xF00F;
+	chip8->instr_masks[26] = 0xF0FF;
 	/* LD Vx, K */
 	chip8->instr[27] = 0xF00A;
 	chip8->instr_masks[27] = 0xF0FF;
@@ -113,7 +114,7 @@ void init_instructions(struct chip8 *chip8)
 	chip8->instr_masks[33] = 0xF0FF;
 	/* LD Vx, [I] */
 	chip8->instr[34] = 0xF065;
-	chip8->instr[34] = 0xF0FF;
+	chip8->instr_masks[34] = 0xF0FF;
 
 }
 
@@ -251,15 +252,289 @@ void init_chip8(struct chip8 *chip8)
 		chip8->reg_PC = PROGRAM_START;
 		chip8->reg_delay = 0;
 		chip8->reg_sound = 0;
+		chip8->reg_SP = 0;
 
 		// Initialize Stack
-		memset(chip8->stack, 0x00, STACK_SIZE);
+		// Stack is 2 bytes per element, i.e. it stores 16 bits per location
+		memset(chip8->stack, 0x00, STACK_SIZE * 2);
 
 		// Initialize keyboard
-		memset(chip8->keyboard, 0, KEY_LIST_SIZE);
+		memset(chip8->keyboard, KEY_NOT_PRESSED, KEY_LIST_SIZE);
 
 		init_font(chip8);
 		init_instructions(chip8);
 	}
 }
 
+void step(struct chip8 *chip8)
+{
+	// Retrive Instruction
+	uint16_t instr = chip8->memory[chip8->reg_PC] << 8 | chip8->memory[chip8->reg_PC+1];
+	chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+
+	// Figure out which instruction
+	int count = 0;
+	int i;
+	for (i = 0; i < INSTRUCTIONS_SIZE; i++) {
+		if ((instr & chip8->instr_masks[i]) == chip8->instr[i]) {
+			count = i;
+		}
+	}
+
+	// nnn
+	uint16_t addr = instr & 0x0FFF; 
+	// Vx, Vy
+	uint8_t vx = (instr & 0x0F00) >> 8;
+	uint8_t vy = (instr & 0x00F0) >> 4;
+	// k, kk
+	uint8_t nibble = instr & 0x000F;
+	uint8_t byte = instr & 0x00FF;
+
+	// for arithmetic purposes
+	int result;
+
+	if (count == -1) {
+		fprintf(stderr, "WARNING: Unrecognized Instruction 0x%x\n", instr);
+	} else {
+		switch (count) {
+		// 0nnn - SYS addr
+		case 0:
+			chip8->reg_PC = addr;
+			break;
+
+		// 00E0 - CLS
+		case 1:
+			//TODO Clear screen here
+			break;
+		
+		// 00EE - RET
+		case 2:
+			chip8->reg_PC = chip8->stack[chip8->reg_SP];
+			chip8->reg_SP--;
+			break;
+
+		// 1nnn - JP addr
+		case 3:
+			chip8->reg_PC = addr;
+			break;
+
+		// 2nnn - CALL addr
+		case 4:
+			chip8->reg_SP++;
+			chip8->stack[chip8->reg_SP] = chip8->reg_PC;
+			chip8->reg_PC = addr;
+			break;
+
+		// 3xkk - SE Vx, byte
+		case 5:
+			if (chip8->regs[vx] == byte) {
+				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+			}
+			break;
+
+		// 4xkk - SNE Vx, byte
+		case 6:
+			if (chip8->regs[vx] != byte) {
+				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+			}
+			break;
+
+		// 5xy0 - SE Vx, Vy
+		case 7:
+			if (chip8->regs[vx] == chip8->regs[vy]) {
+				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+			}
+			break;
+
+		// 6xkk - LD Vx, byte
+		case 8:
+			chip8->regs[vx] = byte;
+			break;
+
+		// 7xkk - ADD Vx, byte
+		case 9:
+			chip8->regs[vx] = chip8->regs[vx] + byte;
+			break;
+
+		// 8xy0 - LD Vx, Vy
+		case 10:
+			chip8->regs[vx] = chip8->regs[vy];
+			break;
+
+		// 8xy1 - OR Vx, Vy
+		case 11:
+			chip8->regs[vx] = chip8->regs[vx] | chip8->regs[vy];
+			break;
+
+		// 8xy2 - AND Vx, Vy
+		case 12:
+			chip8->regs[vx] = chip8->regs[vx] & chip8->regs[vy];
+			break;
+
+		// 8xy3 - XOR Vx, Vy
+		case 13:
+			chip8->regs[vx] = chip8->regs[vx] ^ chip8->regs[vy];
+			break;
+
+		// 8xy4 - ADD Vx, Vy
+		case 14:
+			if (result > 255) {
+				chip8->regs[0xF] = 1;
+			} else {
+				chip8->regs[0xF] = 0;
+			}
+			chip8->regs[vx] = (result & 0xFF);
+			break;
+
+		// 8xy5 - SUB Vx, Vy
+		case 15:
+			result = chip8->regs[vx] - chip8->regs[vy];
+			if (chip8->regs[vx] > chip8->regs[vy]) {
+				chip8->regs[0xF] = 1;
+
+			} else {
+				chip8->regs[0xF] = 0;
+			}
+			chip8->regs[vx] = (result & 0xFF);
+			break;
+
+		// 8xy6 - SHR Vx {, Vy}
+		case 16:
+			result = chip8->regs[vx];
+			if (result & 1 == 1) {
+				chip8->regs[0xF] = 1;
+			} else {
+				chip8->regs[0xF] = 0;
+			}
+			chip8->regs[vx] = result >> 1;
+			break;
+
+		// 8xy7 - SUBN Vx, Vy
+		case 17:
+			result = chip8->regs[vx] - chip8->regs[vy];
+			if (chip8->regs[vx] > chip8->regs[vy]) {
+				chip8->regs[0xF] = 1;
+			} else {
+				chip8->regs[0xF] = 0;
+			}
+			chip8->regs[vx] = (result & 0xFF);
+			break;
+
+		// 8xyE - SHL Vx {, Vy}
+		case 18:
+			result = chip8->regs[vx];
+			if (chip8->regs[vx] > 127) {
+				chip8->regs[0xF] = 1;
+			} else {
+				chip8->regs[0xF] = 0;
+			}
+			chip8->regs[vx] = result << 1;
+			break;
+
+		// 9xy0 - SNE Vx, Vy
+		case 19:
+			if (chip8->regs[vx] != chip8->regs[vy]) {
+				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+			}
+			break;
+
+		// Annn - LD I, addr
+		case 20:
+			chip8->reg_I = addr;
+			break;
+
+		// Bnnn - JP V0, addr
+		case 21:
+			chip8->reg_PC = addr + chip8->regs[0];
+			break;
+
+		// Cxkk - RND Vx, byte
+		case 22:
+			result = rand() & 0xFF;
+			chip8->regs[vx] = byte & result;
+			break;
+
+		// Dxyn - DRW Vx, Vy, nibble
+		case 23:
+			//TODO draw thing
+			break;
+
+		// Ex9E - SKP Vx
+		case 24:
+			result = chip8->regs[vx];
+			if (result < KEY_LIST_SIZE && chip8->keyboard[result] == KEY_PRESSED) {
+				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+			}
+			break;
+
+		// ExA1 - SKNP Vx
+		case 25:
+			result = chip8->regs[vx];
+			if (result < KEY_LIST_SIZE && chip8->keyboard[result] == KEY_NOT_PRESSED) {
+				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
+			}
+			break;
+
+		// Fx07 - LD Vx, DT
+		case 26:
+			chip8->regs[vx] = chip8->reg_delay;
+			break;
+
+		// Fx0A - LD Vx, K
+		case 27:
+			//TODO wait for keypress
+			break;
+
+		// Fx15 - LD DT, Vx
+		case 28:
+			chip8->reg_delay = chip8->regs[vx];
+			break;
+
+		// Fx18 - LD ST, Vx
+		case 29:
+			chip8->reg_sound = chip8->regs[vx];
+			break;
+
+		// Fx1E - ADD I, Vx
+		case 30:
+			chip8->reg_I = chip8->reg_I + chip8->regs[vx];
+			break;
+
+		// Fx29 - LD F, Vx
+		case 31:
+			result = chip8->regs[vx];
+			if (result <= 0xF) {
+				chip8->reg_I = chip8->memory[result*5];
+			}
+			break;
+
+		// Fx33 - LD B, Vx
+		case 32:
+			result = chip8->regs[vx];
+			chip8->memory[chip8->reg_I+2] = result % 10;
+			result = result / 10;
+			chip8->memory[chip8->reg_I+1] = result % 10;
+			result = result / 10;
+			chip8->memory[chip8->reg_I] = result % 10;
+			break;
+
+		// Fx55 - LD [I], Vx
+		case 33:
+			for (result = 0; result <= vx; result++) {
+				chip8->memory[chip8->reg_I + result] = chip8->regs[result];
+			}
+			break;
+
+		// Fx65 - LD Vx, [I]
+		case 34:
+			for (result = 0; result <= vx; result++) {
+				chip8->regs[result] = chip8->memory[chip8->reg_I + result];
+			}
+			break;
+
+		default:
+			break;
+		}
+			
+	}
+}
