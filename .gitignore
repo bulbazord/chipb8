@@ -1,1 +1,4 @@
-*.HTM
+Documentation/*
+*.swp
+*.swo
+*.o
