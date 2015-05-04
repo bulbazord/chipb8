@@ -94,14 +94,6 @@ int main(int argc, char *argv[])
 			cycle_ticks = SDL_GetTicks();
 		}
 
-		for (int i = 0; i <= 0xF; i++) {
-			if (keydown(i)) {
-				chip8->keyboard[i] = 1;
-			} else {
-				chip8->keyboard[i] = 0;
-			}
-		}
-
 		if (SDL_GetTicks() - delay_ticks > (1000 / 60)) {
 			if (chip8->reg_delay) {
 				chip8->reg_delay--;

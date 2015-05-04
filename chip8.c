@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "chip8.h"
+#include "input.h"
 
 /**
  * This function assumes that the chip8 struct
@@ -487,7 +488,7 @@ void step(struct chip8 *chip8)
 		// Ex9E - SKP Vx
 		case 24:
 			result = chip8->regs[vx] & 0xF;
-			if (chip8->keyboard[result] == KEY_PRESSED) {
+			if (keydown(result)) {
 				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
 			}
 			break;
@@ -495,7 +496,7 @@ void step(struct chip8 *chip8)
 		// ExA1 - SKNP Vx
 		case 25:
 			result = chip8->regs[vx] & 0xF;
-			if (chip8->keyboard[result] == KEY_NOT_PRESSED) {
+			if (!keydown(result)) {
 				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
 			}
 			break;

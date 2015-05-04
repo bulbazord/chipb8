@@ -16,6 +16,9 @@ graphics.o: graphics.c
 input.o: input.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
 
+chip8.o: chip8.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
+
 .PHONY: clean
 clean:
 	rm $(obj) chipb8
