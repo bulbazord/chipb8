@@ -18,4 +18,4 @@ Building and Running
 The makefile provided should be sufficient to create this.
 Running the code is done like so:
 
-<code> ./chipb8 <ROM file> </code>
+<code> ./chipb8 `<ROM file`> </code>
