@@ -1,4 +1,5 @@
 #include "graphics.h"
+
 /**
  * Initializes the graphics. Probably could use some gotos here for cleanup. 
  */
@@ -52,7 +53,6 @@ void destroy_graphics(struct graphics *graphics)
  */
 void render(struct graphics *graphics, struct chip8 *chip8)
 {
-	int i;
 	void *pixels;
 	int pitch;
 
@@ -61,7 +61,7 @@ void render(struct graphics *graphics, struct chip8 *chip8)
 			&pixels,
 			&pitch);
 	uint32_t *pix = pixels;
-	for (i = 0; i < (SCREEN_WIDTH * SCREEN_HEIGHT); i++) {
+	for (int i = 0; i < (SCREEN_WIDTH * SCREEN_HEIGHT); i++) {
 		if (chip8->screen[i] == 0) {
 			pix[i] = 0;
 		} else {

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-#include "SDL.h"
+#include <SDL.h>
 
 #include "input.h"
 #include "chip8.h"
@@ -29,21 +30,6 @@ int load_program(struct chip8 *chip8, char *file)
 	}
 	fclose(program);
 	return 0;
-}
-
-void test(struct chip8 *chip8, int ticks)
-{
-	int i;
-	for (i = 0; i < 64*ticks; i++) {
-		chip8->screen[i] = 0;
-	}
-	for (i = 64*ticks; i < (64*ticks)+64; i++) {
-		chip8->screen[i] = 1;
-	}
-	for (i = (64*ticks)+64; i < (2048); i++) {
-		chip8->screen[i] = 0;
-	}
-
 }
 
 int main(int argc, char *argv[])
@@ -84,7 +70,8 @@ int main(int argc, char *argv[])
 	SDL_Event event;
 
 	int quit = 0;
-	int ticks = 0;
+	int cycle_ticks = 0;
+	int delay_ticks = 0;
 
 	while (!quit) {
 		while (SDL_PollEvent(&event)) {
@@ -92,11 +79,42 @@ int main(int argc, char *argv[])
 				quit = 1;
 			}
 		}
+		if (SDL_GetTicks() - cycle_ticks > 1) {
+			if (chip8->wait_key == -1) {
+				step(chip8);
+			} else {
+				for (int i = 0; i <= 0xF; i++) {
+					if (keydown(i)) {
+						chip8->keyboard[chip8->wait_key] = i;
+						chip8->wait_key = -1;
+						break;
+					}
+				}
+			}
+			cycle_ticks = SDL_GetTicks();
+		}
 
-		step(chip8);
-		test(chip8, ticks);
-		ticks = (ticks + 1) & 31;
-		render(graphics, chip8);
+		for (int i = 0; i <= 0xF; i++) {
+			if (keydown(i)) {
+				chip8->keyboard[i] = 1;
+			} else {
+				chip8->keyboard[i] = 0;
+			}
+		}
+
+		if (SDL_GetTicks() - delay_ticks > (1000 / 60)) {
+			if (chip8->reg_delay) {
+				chip8->reg_delay--;
+			}
+
+			if (chip8->reg_sound) {
+				chip8->reg_sound--;
+				//TODO sound here
+			}
+			render(graphics, chip8);
+			delay_ticks = SDL_GetTicks();
+		}
+
 	}
 
 	destroy_graphics(graphics);

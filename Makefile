@@ -1,16 +1,20 @@
 src = $(wildcard *.c)
 obj = $(src:.c=.o)
 
+CFLAGS = --std=c11
 LDFLAGS = `sdl2-config --cflags --libs`
 
 chipb8: $(obj)
-	$(CC) $(LDFLAGS) -o $@ $^ 
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ 
 
 main.o: main.c
-	$(CC) $(LDFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
 
 graphics.o: graphics.c
-	$(CC) $(LDFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
+
+input.o: input.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:

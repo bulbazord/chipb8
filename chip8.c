@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "chip8.h"
 
 /**
@@ -10,109 +11,109 @@
  */
 void init_instructions(struct chip8 *chip8)
 {
-	/* SYS addr */
+	// SYS addr
 	chip8->instr[0] = 0x0000;
 	chip8->instr_masks[0] = 0xF000;
-	/* CLS */
+	// CLS
 	chip8->instr[1] = 0x00E0;
 	chip8->instr_masks[1] = 0xFFFF;
-	/* RET */
+	// RET
 	chip8->instr[2] = 0x00EE;
 	chip8->instr_masks[2] = 0xFFFF;
-	/* JP addr */
+	// JP addr
 	chip8->instr[3] = 0x1000;
 	chip8->instr_masks[3] = 0xF000;
-	/* CALL addr */
+	// CALL addr
 	chip8->instr[4] = 0x2000;
 	chip8->instr_masks[4] = 0xF000;
-	/* SE Vx, byte */
+	// SE Vx, byte
 	chip8->instr[5] = 0x3000;
 	chip8->instr_masks[5] = 0xF000;
-	/* SNE Vx, byte */
+	// SNE Vx, byte
 	chip8->instr[6] = 0x4000;
 	chip8->instr_masks[6] = 0xF000;
-	/* SE Vx, Vy */
+	// SE Vx, Vy
 	chip8->instr[7] = 0x5000;
 	chip8->instr_masks[7] = 0xF00F;
-	/* LD Vx, byte */
+	// LD Vx, byte
 	chip8->instr[8] = 0x6000;
 	chip8->instr_masks[8] = 0xF000;
-	/* ADD Vx, byte */
+	// ADD Vx, byte
 	chip8->instr[9] = 0x7000;
 	chip8->instr_masks[9] = 0xF000;
-	/* LD Vx, Vy */
+	// LD Vx, Vy
 	chip8->instr[10] = 0x8000;
 	chip8->instr_masks[10] = 0xF00F;
-	/* OR Vx, Vy */
+	// OR Vx, Vy
 	chip8->instr[11] = 0x8001;
 	chip8->instr_masks[11] = 0xF00F;
-	/* AND Vx, Vy */
+	// AND Vx, Vy
 	chip8->instr[12] = 0x8002;
 	chip8->instr_masks[12] = 0xF00F;
-	/* XOR Vx, Vy */
+	// XOR Vx, Vy
 	chip8->instr[13] = 0x8003;
 	chip8->instr_masks[13] = 0xF00F;
-	/* ADD Vx, Vy */
+	// ADD Vx, Vy
 	chip8->instr[14] = 0x8004;
 	chip8->instr_masks[14] = 0xF00F;
-	/* SUB Vx, Vy */
+	// SUB Vx, Vy
 	chip8->instr[15] = 0x8005;
 	chip8->instr_masks[15] = 0xF00F;
-	/* SHR Vx {, Vy} */
+	// SHR Vx {, Vy}
 	chip8->instr[16] = 0x8006;
 	chip8->instr_masks[16] = 0xF00F;
-	/* SUBN Vx {, Vy} */
+	// SUBN Vx {, Vy}
 	chip8->instr[17] = 0x8007;
 	chip8->instr_masks[17] = 0xF00F;
-	/* SHL Vx {, Vy} */
+	// SHL Vx {, Vy}
 	chip8->instr[18] = 0x800E;
 	chip8->instr_masks[18] = 0xF00F;
-	/* SNE Vx, Vy */
+	// SNE Vx, Vy
 	chip8->instr[19] = 0x9000;
 	chip8->instr_masks[19] = 0xF000;
-	/* LD I, addr */
+	// LD I, addr
 	chip8->instr[20] = 0xA000;
 	chip8->instr_masks[20] = 0xF000;
-	/* JP V0, addr */
+	// JP V0, addr
 	chip8->instr[21] = 0xB000;
 	chip8->instr_masks[21] = 0xF000;
-	/* RND Vx, byte */
+	// RND Vx, byte
 	chip8->instr[22] = 0xC000;
 	chip8->instr_masks[22] = 0xF000;
-	/* DRW Vx, Vy, nibble */
+	// DRW Vx, Vy, nibble
 	chip8->instr[23] = 0xD000;
 	chip8->instr_masks[23] = 0xF000;
-	/* SKP Vx */
+	// SKP Vx
 	chip8->instr[24] = 0xE09E;
 	chip8->instr_masks[24] = 0xF0FF;
-	/* SKNP Vx */
+	// SKNP Vx
 	chip8->instr[25] = 0xE0A1;
 	chip8->instr_masks[25] = 0xF0FF;
-	/* LD Vx, DT */
+	// LD Vx, DT
 	chip8->instr[26] = 0xF007;
 	chip8->instr_masks[26] = 0xF0FF;
-	/* LD Vx, K */
+	// LD Vx, K
 	chip8->instr[27] = 0xF00A;
 	chip8->instr_masks[27] = 0xF0FF;
-	/* LD DT, Vx */
+	// LD DT, Vx
 	chip8->instr[28] = 0xF015;
 	chip8->instr_masks[28] = 0xF0FF;
-	/* LD ST, Vx */
+	// LD ST, Vx
 	chip8->instr[29] = 0xF018;
 	chip8->instr_masks[29] = 0xF0FF;
-	/* ADD I, Vx */
+	// ADD I, Vx
 	chip8->instr[30] = 0xF01E;
 	chip8->instr_masks[30] = 0xF0FF;
-	/* LD F, Vx */
+	// LD F, Vx
 	chip8->instr[31] = 0xF029;
 	chip8->instr_masks[31] = 0xF0FF;
-	/* LD B, Vx */
+	// LD B, Vx
 	chip8->instr[32] = 0xF033;
 	chip8->instr_masks[32] = 0xF0FF;
-	/* LD [I], Vx */
+	// LD [I], Vx
 	chip8->instr[33] = 0xF055;
 	chip8->instr_masks[33] = 0xF0FF;
-	/* LD Vx, [I] */
+	// LD Vx, [I]
 	chip8->instr[34] = 0xF065;
 	chip8->instr_masks[34] = 0xF0FF;
 
@@ -285,8 +286,7 @@ void step(struct chip8 *chip8)
 
 	// Figure out which instruction
 	int count = 0;
-	int i;
-	for (i = 0; i < INSTRUCTIONS_SIZE; i++) {
+	for (int i = 0; i < INSTRUCTIONS_SIZE; i++) {
 		if ((instr & chip8->instr_masks[i]) == chip8->instr[i]) {
 			count = i;
 		}
@@ -303,7 +303,6 @@ void step(struct chip8 *chip8)
 
 	// for arithmetic purposes
 	int result;
-	int j;
 
 	if (count == -1) {
 		fprintf(stderr, "WARNING: Unrecognized Instruction 0x%x\n", instr);
@@ -470,6 +469,19 @@ void step(struct chip8 *chip8)
 		// Dxyn - DRW Vx, Vy, nibble
 		case 23:
 			//TODO draw
+			chip8->regs[0xF] = 0;
+			for (int j = 0; j < nibble; j++) {
+				byte = chip8->memory[chip8->reg_I + j];
+				for (int i = 0; i < 8; i++) {
+					int px = (chip8->regs[vx] + i) & (SCREEN_WIDTH-1);
+					int py = (chip8->regs[vy] + j) & (SCREEN_HEIGHT-1);
+					int pos = SCREEN_WIDTH * py + px;
+					int pix = (byte & (1 << (7-i))) != 0;
+
+					chip8->regs[0xF] = chip8->regs[0xF] | (chip8->screen[pos] & pix);
+					chip8->screen[pos] = chip8->screen[pos] ^ pix;
+				}
+			}
 			break;
 
 		// Ex9E - SKP Vx
@@ -531,14 +543,14 @@ void step(struct chip8 *chip8)
 
 		// Fx55 - LD [I], Vx
 		case 33:
-			for (i = 0; i <= vx; i++) {
+			for (int i = 0; i <= vx; i++) {
 				chip8->memory[chip8->reg_I + i] = chip8->regs[i];
 			}
 			break;
 
 		// Fx65 - LD Vx, [I]
 		case 34:
-			for (i = 0; i <= vx; i++) {
+			for (int i = 0; i <= vx; i++) {
 				chip8->regs[i] = chip8->memory[chip8->reg_I + i];
 			}
 			break;

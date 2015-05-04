@@ -42,7 +42,7 @@ struct chip8 {
 	uint16_t	instr_masks[INSTRUCTIONS_SIZE];
 
 	uint8_t screen[SCREEN_WIDTH * SCREEN_HEIGHT];
-	uint8_t wait_key;
+	int wait_key;
 };
 
 void init_chip8(struct chip8 *chip8);

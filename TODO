@@ -1,7 +1,3 @@
-Draw game (almost done - check TODO in chip8.c)
-
-Handle input (finish input.c)
-
 Handle sound (make a sound.c or something)
 
 Finish main loop (main.c)
