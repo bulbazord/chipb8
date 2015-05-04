@@ -1,5 +1,7 @@
-Write interpretation code
-Run main loop
+Draw game (almost done - check TODO in chip8.c)
 
-SDL code to handle input
-SDL code to make it visual
+Handle input (finish input.c)
+
+Handle sound (make a sound.c or something)
+
+Finish main loop (main.c)

@@ -239,6 +239,9 @@ void init_font(struct chip8 *chip8)
 
 }
 
+/**
+ * Initialies the chip8. Sets all values to default.
+ */
 void init_chip8(struct chip8 *chip8)
 {
 	if (chip8) {
@@ -264,13 +267,16 @@ void init_chip8(struct chip8 *chip8)
 		// Initialize Screen
 		memset(chip8->screen, 0, SCREEN_WIDTH * SCREEN_HEIGHT);
 
-		chip8->wait_key = 0;
+		chip8->wait_key = -1;
 
 		init_font(chip8);
 		init_instructions(chip8);
 	}
 }
 
+/**
+ * Function to perform a fetch, decode, and execute step
+ */
 void step(struct chip8 *chip8)
 {
 	// Retrive Instruction
@@ -297,6 +303,7 @@ void step(struct chip8 *chip8)
 
 	// for arithmetic purposes
 	int result;
+	int j;
 
 	if (count == -1) {
 		fprintf(stderr, "WARNING: Unrecognized Instruction 0x%x\n", instr);
@@ -383,6 +390,7 @@ void step(struct chip8 *chip8)
 
 		// 8xy4 - ADD Vx, Vy
 		case 14:
+			result = chip8->regs[vx] + chip8->regs[vy];
 			if (result > 255) {
 				chip8->regs[0xF] = 1;
 			} else {
@@ -416,8 +424,8 @@ void step(struct chip8 *chip8)
 
 		// 8xy7 - SUBN Vx, Vy
 		case 17:
-			result = chip8->regs[vx] - chip8->regs[vy];
-			if (chip8->regs[vx] > chip8->regs[vy]) {
+			result = chip8->regs[vy] - chip8->regs[vx];
+			if (chip8->regs[vy] > chip8->regs[vx]) {
 				chip8->regs[0xF] = 1;
 			} else {
 				chip8->regs[0xF] = 0;
@@ -428,7 +436,7 @@ void step(struct chip8 *chip8)
 		// 8xyE - SHL Vx {, Vy}
 		case 18:
 			result = chip8->regs[vx];
-			if (chip8->regs[vx] > 127) {
+			if (result > 127) {
 				chip8->regs[0xF] = 1;
 			} else {
 				chip8->regs[0xF] = 0;
@@ -461,21 +469,21 @@ void step(struct chip8 *chip8)
 
 		// Dxyn - DRW Vx, Vy, nibble
 		case 23:
-			//TODO draw thing
+			//TODO draw
 			break;
 
 		// Ex9E - SKP Vx
 		case 24:
-			result = chip8->regs[vx];
-			if (result < KEY_LIST_SIZE && chip8->keyboard[result] == KEY_PRESSED) {
+			result = chip8->regs[vx] & 0xF;
+			if (chip8->keyboard[result] == KEY_PRESSED) {
 				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
 			}
 			break;
 
 		// ExA1 - SKNP Vx
 		case 25:
-			result = chip8->regs[vx];
-			if (result < KEY_LIST_SIZE && chip8->keyboard[result] == KEY_NOT_PRESSED) {
+			result = chip8->regs[vx] & 0xF;
+			if (chip8->keyboard[result] == KEY_NOT_PRESSED) {
 				chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
 			}
 			break;
@@ -487,7 +495,7 @@ void step(struct chip8 *chip8)
 
 		// Fx0A - LD Vx, K
 		case 27:
-			chip8->wait_key = 1;
+			chip8->wait_key = vx;
 			break;
 
 		// Fx15 - LD DT, Vx
@@ -508,9 +516,7 @@ void step(struct chip8 *chip8)
 		// Fx29 - LD F, Vx
 		case 31:
 			result = chip8->regs[vx];
-			if (result <= 0xF) {
-				chip8->reg_I = chip8->memory[result*5];
-			}
+			chip8->reg_I = chip8->memory[(result & 0xF) * 5];
 			break;
 
 		// Fx33 - LD B, Vx
@@ -525,15 +531,15 @@ void step(struct chip8 *chip8)
 
 		// Fx55 - LD [I], Vx
 		case 33:
-			for (result = 0; result <= vx; result++) {
-				chip8->memory[chip8->reg_I + result] = chip8->regs[result];
+			for (i = 0; i <= vx; i++) {
+				chip8->memory[chip8->reg_I + i] = chip8->regs[i];
 			}
 			break;
 
 		// Fx65 - LD Vx, [I]
 		case 34:
-			for (result = 0; result <= vx; result++) {
-				chip8->regs[result] = chip8->memory[chip8->reg_I + result];
+			for (i = 0; i <= vx; i++) {
+				chip8->regs[i] = chip8->memory[chip8->reg_I + i];
 			}
 			break;
 

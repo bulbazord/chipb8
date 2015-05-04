@@ -5,7 +5,12 @@
 
 #include "input.h"
 #include "chip8.h"
+#include "graphics.h"
 
+/**
+ * Takes a binary ROM for CHIP-8 and copies it into
+ * the chip8 memory.
+ */
 int load_program(struct chip8 *chip8, char *file)
 {
 	FILE *program;
@@ -24,6 +29,21 @@ int load_program(struct chip8 *chip8, char *file)
 	}
 	fclose(program);
 	return 0;
+}
+
+void test(struct chip8 *chip8, int ticks)
+{
+	int i;
+	for (i = 0; i < 64*ticks; i++) {
+		chip8->screen[i] = 0;
+	}
+	for (i = 64*ticks; i < (64*ticks)+64; i++) {
+		chip8->screen[i] = 1;
+	}
+	for (i = (64*ticks)+64; i < (2048); i++) {
+		chip8->screen[i] = 0;
+	}
+
 }
 
 int main(int argc, char *argv[])
@@ -48,30 +68,40 @@ int main(int argc, char *argv[])
 	}
 
 	/* Initialize SDL stuff*/
+	srand(time(NULL));
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		fprintf(stderr, "SDL Initialization failed: %s\n", SDL_GetError());
 		return 1;
 	}
 
-	srand(time(NULL));
+	struct graphics *graphics = malloc(sizeof(struct graphics));
 
-	int quit = 0;
-	SDL_Window *screen = SDL_CreateWindow("CHIP-b8", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 320, 0);
-	SDL_Event event;
-
-	while (!quit) {
-		/* Check to see if user has quit */
-		SDL_PollEvent(&event);
-		if (event.type == SDL_QUIT) {
-			quit = 1;
-		}
-
-		/* Execute instruction */
-		step(chip8);
+	if (init_graphics(graphics)) {
+		fprintf(stderr, "Error in creating window\n");
+		return 1;
 	}
 
-	SDL_Quit();
+	SDL_Event event;
 
+	int quit = 0;
+	int ticks = 0;
+
+	while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
+				quit = 1;
+			}
+		}
+
+		step(chip8);
+		test(chip8, ticks);
+		ticks = (ticks + 1) & 31;
+		render(graphics, chip8);
+	}
+
+	destroy_graphics(graphics);
+	free(graphics);
+	SDL_Quit();
 	free(chip8);
 	return 0;
 }

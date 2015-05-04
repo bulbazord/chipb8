@@ -9,6 +9,9 @@ chipb8: $(obj)
 main.o: main.c
 	$(CC) $(LDFLAGS) -c -o $@ $<
 
+graphics.o: graphics.c
+	$(CC) $(LDFLAGS) -c -o $@ $<
+
 .PHONY: clean
 clean:
 	rm $(obj) chipb8
