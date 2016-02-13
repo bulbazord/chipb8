@@ -5,7 +5,7 @@ CFLAGS = --std=c11
 LDFLAGS = `sdl2-config --cflags --libs`
 
 chipb8: $(obj)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ 
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 main.o: main.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
