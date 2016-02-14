@@ -420,7 +420,7 @@ void step(struct chip8 *chip8)
         // 8xy6 - SHR Vx {, Vy}
         case 16:
             result = chip8->regs[vx];
-            if (result & 1 == 1) {
+            if ((result & 1) == 1) {
                 chip8->regs[0xF] = 1;
             } else {
                 chip8->regs[0xF] = 0;
