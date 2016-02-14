@@ -19,3 +19,5 @@ The makefile provided should be sufficient to create this.
 Running the code is done like so:
 
 <code> ./chipb8 `<ROM file`> </code>
+
+Thanks to Sergey Naydenov for SCTEST. This ROM can be found on emu-docs/emu-docs.git on Github.

@@ -535,7 +535,7 @@ void step(struct chip8 *chip8)
         // Fx29 - LD F, Vx
         case 31:
             result = chip8->regs[vx];
-            chip8->reg_I = chip8->memory[(result & 0xF) * 5];
+            chip8->reg_I = (result & 0xF) * 5;
             break;
 
         // Fx33 - LD B, Vx
