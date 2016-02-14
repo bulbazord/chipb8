@@ -117,9 +117,9 @@ int main(int argc, char *argv[])
                 chip8->reg_sound--;
                 //TODO sound here
             }
-            render(graphics, chip8);
             delay_ticks = SDL_GetTicks();
         }
+        render(graphics, chip8);
 
     }
 

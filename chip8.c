@@ -408,7 +408,7 @@ void step(struct chip8 *chip8)
         // 8xy5 - SUB Vx, Vy
         case 15:
             result = chip8->regs[vx] - chip8->regs[vy];
-            if (chip8->regs[vx] > chip8->regs[vy]) {
+            if (result >= 0) {
                 chip8->regs[0xF] = 1;
 
             } else {
@@ -431,7 +431,7 @@ void step(struct chip8 *chip8)
         // 8xy7 - SUBN Vx, Vy
         case 17:
             result = chip8->regs[vy] - chip8->regs[vx];
-            if (chip8->regs[vy] > chip8->regs[vx]) {
+            if (result >= 0) {
                 chip8->regs[0xF] = 1;
             } else {
                 chip8->regs[0xF] = 0;
