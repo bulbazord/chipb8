@@ -295,7 +295,7 @@ void step(struct chip8 *chip8)
     chip8->reg_PC = (chip8->reg_PC + 2) & 0xFFF;
 
     // Decode Instruction
-    int count = 0;
+    int count = -1;
     for (int i = 0; i < INSTRUCTIONS_SIZE; i++) {
         if ((instr & chip8->instr_masks[i]) == chip8->instr[i]) {
             count = i;
