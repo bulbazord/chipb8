@@ -8,27 +8,27 @@
 ; History:
 ;   ver 1.0
 ;   ver 1.1
-;           + Check FX1E (I = I + VX) buffer overflow
+;           Check FX1E (I = I VX) buffer overflow
 ;   ver 1.2
-;           + Check emulator initialization
+;           Check emulator initialization
 ;           * fix ERROR BCD print procedure
 
-OPTION BINARY 
-ALIGN OFF     
+OPTION BINARY
+ALIGN OFF
 
 	jp main
-copyr:	
+copyr:
 	da ' Tronix (c) 2010 '
 main:
 ;	high
 	cls
 			; check emulator initialization:
 			; all registers must be set to zeroes
-	se vf,0  	
-	jp errorI	
-	se ve,0 	
-	jp errorI	
-	se vd,0 
+	se vf,0
+	jp errorI
+	se ve,0
+	jp errorI
+	se vd,0
 	jp errorI
 	se vc,0
 	jp errorI
@@ -56,7 +56,7 @@ main:
 	jp errorI
 	se v0,0
 	jp errorI
-	
+
 	ld v0,0		; fill all registers by hands
 	ld v1,1		; but we don't know, how work FX65 instruction
 	ld v2,2
@@ -77,13 +77,13 @@ main:
 			; check FX65 (load VX from mem) instruction
 
 	ld I, nullreg   ; fill all reg with null
-	ld vf, [I]	
+	ld vf, [I]
 
-	se vf,0  	
+	se vf,0
 	jp error1	; oh shi... FX65 don't work, print error number
 	se ve,0 	; with special error1 function, not used FX65
 	jp error1	; and 8x5 font. Just draw sprites: ERROR 0
-	se vd,0 
+	se vd,0
 	jp error1
 	se vc,0
 	jp error1
@@ -116,7 +116,7 @@ main:
 
 			; Check font 8x5 loaded. We need it for draw
 			; error numbers.
-	
+
 	ld v0,0		; symbol 0
 	ld f,v0		; I pos to symbol 0
 	ld v0,[I]	; load to v0 first 8 bits
@@ -128,7 +128,7 @@ main:
 
 			; Test BCD instructions. We need it for print
 	ld I, Score	; errors number
-	ld ve,123       
+	ld ve,123
 	ld B, ve
 	ld v2, [I]
 	se v0,1
@@ -268,7 +268,7 @@ main:
 	se v0,0
 	jp error
 
-			; Check FX1E (I = I + VX) buffer overflow
+			; Check FX1E (I = I VX) buffer overflow
 	ld ve, 24	; set error = 24
 	ld I, #FFE	; move to #FFE offset
 	ld v0, 2
@@ -286,7 +286,7 @@ errorBCD:
 	ld f, v2
 	drw v0,v1,5
 	add v0,5
-	ld v2, #c	; C symbol	
+	ld v2, #c	; C symbol
 	ld F, v2
 	drw v0,v1,5
 	add v2,1	; D symbol
@@ -326,10 +326,10 @@ error:			; in VE - error number
 	call draw_error
 	call draw_number
 	jp fin
-	
+
 
 ;// PROCEDURE
-draw_error:	
+draw_error:
 	ld v0,0
 	ld v1,0
 	ld I,symbolE	; E symbol
@@ -352,17 +352,17 @@ draw_number:
 	ld v4, v0
 	add v4, 10
 	ld v5, v1
-    	LD  I,  Score   ; Get address of Score
-    	LD  B,  VE      ; Stores in memory BCD representation of VE
-    	LD  V2, [I]     ; Reads V0...V2 in memory, so the score
-    	LD  F,  V0      ; I points to hex char in V1, so the 1st score char
-    	DRW V4, V5, 5   ; Draw 8*5 sprite at (V4,V5) from M[I], so char V1
-    	ADD V4, 6     ; Set X to the X coord. of 2nd score char
+    LD  I,  Score   ; Get address of Score
+    LD  B,  VE      ; Stores in memory BCD representation of VE
+    LD  V2, [I]     ; Reads V0...V2 in memory, so the score
+    LD  F,  V0      ; I points to hex char in V1, so the 1st score char
+    DRW V4, V5, 5   ; Draw 8*5 sprite at (V4,V5) from M[I], so char V1
+    ADD V4, 6     ; Set X to the X coord. of 2nd score char
 	ld f, v1
 	drw v4, v5, 5
 	add v4, 6
-    	LD  F, V2       ; I points to hex char in V2, so 2nd score char
-    	DRW V4, V5, 5   ; Draw 8*5 sprite at (V4,V5) from M[I], so char V2
+    LD  F, V2       ; I points to hex char in V2, so 2nd score char
+    DRW V4, V5, 5   ; Draw 8*5 sprite at (V4,V5) from M[I], so char V2
 	RET
 
 fin:	jp fin
@@ -393,7 +393,7 @@ symbolI:
 symbolN:
 	db $1...1...
 	db $11..1...
-	db $1.1.1...	
+	db $1.1.1...
 	db $1..11...
 	db $1...1...
 symbolR:
