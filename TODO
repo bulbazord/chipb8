@@ -1,4 +1,2 @@
-Clean up code, document better.
-Perform correctness tests with ROMs from emu-docs.
 Handle sound (make a sound.c or something)
-Maybe optimize?
+Maybe optimize? Maybe JIT? Maybe????!!!
